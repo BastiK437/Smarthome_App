@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/grey">
+
+    <TextView
+        android:id="@+id/heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Musik Steuerung"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:padding="20dp"
+        android:textSize="30dp"/>
+
+    <TextView
+        android:id="@+id/source_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Source"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:layout_below="@id/heading"/>
+    
+    <RelativeLayout
+        android:id="@+id/source_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/source_header"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/dvd_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TV"
+            android:textSize="15dp"
+            android:layout_margin="15dp"
+            android:layout_alignParentLeft="true"/>
+
+        <Button
+            android:id="@+id/aux_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AUX"
+            android:textSize="15dp"
+            android:layout_centerInParent="true"/>
+
+        <Button
+            android:id="@+id/tape_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BT"
+            android:textSize="15dp"
+            android:layout_margin="15dp"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/volume_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/source_layout"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/volume_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volume"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:padding="10dp"
+            />
+
+        <Spinner
+            android:id="@+id/volume_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp">
+        </Spinner>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/volume_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/volume_layout"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/volume_down_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volume Down"
+            android:textSize="15dp"
+            android:layout_margin="15dp"
+            android:layout_alignParentLeft="true"/>
+
+        <Button
+            android:id="@+id/volume_up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volume Up"
+            android:textSize="15dp"
+            android:layout_margin="15dp"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+    <Switch
+        android:id="@+id/power_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="30dp"
+        android:switchMinWidth="60dp"
+        android:text="On/Off"
+        android:textSize="20sp"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:id="@+id/bt_bonded_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HC06 bonded"
+        android:textColor="@color/red"
+        android:layout_alignParentLeft="true"
+        android:layout_alignBottom="@id/connected_layout"
+        android:layout_margin="30dp"/>
+
+    <LinearLayout
+        android:id="@+id/connected_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        >
+
+        <TextView
+            android:id="@+id/bt_connected_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HC06 connected"
+            android:textColor="@color/red"
+            />
+
+        <Button
+            android:id="@+id/reload_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/reload"
+            android:layout_alignRight="@id/bt_connected_text"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="15dp"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/terminal_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Terminal"
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:layout_below="@id/volume_buttons" />
+
+    <ScrollView
+        android:id="@+id/terminal_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/volume_buttons"
+        android:layout_alignBottom="@id/bt_bonded_text"
+        android:layout_marginTop="130dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/terminal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+</RelativeLayout>
