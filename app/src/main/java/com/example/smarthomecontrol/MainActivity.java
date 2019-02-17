@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -97,6 +98,12 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
         try {
+            btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
             btOutput = btSocket.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,13 +112,17 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                try {
-                    powerSwitch.setChecked(true);
-                    String aux = "aux";
-                    btOutput.write(aux.getBytes());
-                    //btOutput.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(btSocket.isConnected()){
+                    try {
+                        powerSwitch.setChecked(true);
+                        String aux = "aux";
+                        btOutput.write(aux.getBytes());
+                        //btOutput.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    addTerminalText("not connected");
                 }
             }
         });
@@ -119,13 +130,17 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tape_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                try {
-                    powerSwitch.setChecked(true);
-                    String aux = "tape";
-                    btOutput.write(aux.getBytes());
-                    //btOutput.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(btSocket.isConnected()){
+                    try {
+                        powerSwitch.setChecked(true);
+                        String aux = "tape";
+                        btOutput.write(aux.getBytes());
+                        //btOutput.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    addTerminalText("not connected");
                 }
             }
         });
@@ -133,13 +148,17 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.dvd_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                try {
-                    powerSwitch.setChecked(true);
-                    String aux = "dvd";
-                    btOutput.write(aux.getBytes());
-                    //btOutput.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(btSocket.isConnected()){
+                    try {
+                        powerSwitch.setChecked(true);
+                        String aux = "dvd";
+                        btOutput.write(aux.getBytes());
+                        //btOutput.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    addTerminalText("not connected");
                 }
             }
         });
@@ -148,17 +167,23 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.power_switch).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                String buffer;
-                if(powerSwitch.isChecked()){
-                    buffer = "anlage an";
+                if(btSocket.isConnected()){
+                    String buffer;
+                    if(powerSwitch.isChecked()){
+                        buffer = "anlage an";
+                    }else{
+                        buffer = "anlage aus";
+                    }
+                    try {
+                        btOutput.write(buffer.getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }else{
-                    buffer = "anlage aus";
+                    powerSwitch.setChecked(false);
+                    addTerminalText("not connected");
                 }
-                try {
-                    btOutput.write(buffer.getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
             }
         });
 
@@ -186,13 +211,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void addTerminalText(String text){
-//        View child = getLayoutInflater().inflate(R.layout.terminal_message, null);
-//        TextView terminal_text = child.findViewById(R.id.terminal_text);
-//        terminal_text.setText(text);
-//        terminal.addView(child);
-//
-//        ScrollView sv = findViewById(R.id.terminal_scroll);
-//        sv.fullScroll(View.FOCUS_DOWN);
+
+        View child = getLayoutInflater().inflate(R.layout.terminal_message, null);
+        TextView terminal_text = child.findViewById(R.id.terminal_text);
+        terminal_text.setText(text);
+        terminal.addView(child);
+
+        final ScrollView sv = findViewById(R.id.terminal_scroll);
+        sv.post(new Runnable() {
+            @Override
+            public void run() {
+                sv.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
     }
 
     @Override
