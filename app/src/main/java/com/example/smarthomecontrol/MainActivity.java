@@ -1,6 +1,5 @@
 package com.example.smarthomecontrol;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -8,28 +7,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
+import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.View;
-import android.view.textclassifier.TextClassificationManager;
-import android.widget.ArrayAdapter;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,10 +67,12 @@ public class MainActivity extends AppCompatActivity {
         powerSwitch = findViewById(R.id.power_switch);
         terminal = findViewById(R.id.terminal);
 
+        /*
         Spinner spinner = (Spinner) findViewById(R.id.volume_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.volume_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        */
         //spinner.setSelection(0);
         //spinner.getSelectedItemPosition();
 
@@ -85,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
-        Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
+       Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
 
         for(BluetoothDevice b : btDevicesSet){
             if(b.getAddress().equals("20:16:05:26:33:92")){
-                TextView bondedBT = findViewById(R.id.bt_bonded_text);
-                bondedBT.setTextColor(Color.GREEN);
+                //TextView bondedBT = findViewById(R.id.bt_bonded_text);
+                //bondedBT.setTextColor(Color.GREEN);
                 controller = b;
             }
         }
@@ -99,17 +96,14 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
             btOutput = btSocket.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
+        createMainMenu();
+
+    /*    findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 if(btSocket.isConnected()){
@@ -206,6 +200,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.terminal_send_button).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                EditText sendText = findViewById(R.id.terminal_send_text);
+                String input = sendText.getText().toString();
+                addTerminalText("Sending: " + input);
+            }
+        });*/
+
     }
 
 
@@ -237,6 +240,38 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception ex) {
             Toast.makeText(MainActivity.this, ex.toString(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void createMainMenu(){
+        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point screenSize = new Point();
+        display.getSize(screenSize);
+        int screenWith = screenSize.x / 3;
+
+        Button menu_button = findViewById(R.id.tv_menu_button);
+        menu_button.setWidth(screenWith);
+        menu_button.setHeight(screenWith);
+
+        menu_button = findViewById(R.id.musik_menu_button);
+        menu_button.setWidth(screenWith);
+        menu_button.setHeight(screenWith);
+
+        menu_button = findViewById(R.id.relais_menu_button);
+        menu_button.setWidth(screenWith);
+        menu_button.setHeight(screenWith);
+
+        menu_button = findViewById(R.id.terminal_menu_button);
+        menu_button.setWidth(screenWith);
+        menu_button.setHeight(screenWith);
+    }
+
+    public static int dpToSp(float dp, Context context) {
+        return (int) (dpToPx(dp, context) / context.getResources().getDisplayMetrics().scaledDensity);
+    }
+
+    public static int dpToPx(float dp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
 }
