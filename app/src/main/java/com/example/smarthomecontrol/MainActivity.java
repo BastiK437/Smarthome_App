@@ -27,14 +27,14 @@ import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
-    private Bluetooth btDevice;
+    Bluetooth btDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //btDevice = new Bluetooth(this);
+        btDevice = new Bluetooth(this);
 
         /*
         Spinner spinner = (Spinner) findViewById(R.id.volume_spinner);
@@ -49,11 +49,21 @@ public class MainActivity extends AppCompatActivity {
 
         createMainMenu();
 
+        Intent i = new Intent(MainActivity.this, MusicControl.class);
+        startActivity(i);
+
         findViewById(R.id.musik_menu_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent i = new Intent(MainActivity.this, MusicControl.class);
-                startActivity(i);
+            Intent i = new Intent(MainActivity.this, MusicControl.class);
+            startActivity(i);
+            }
+        });
+
+        findViewById(R.id.reload_main_menu_button).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                btDevice.connect();
             }
         });
 
@@ -83,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         menu_button.setHeight(screenWith);
     }
 
+    public Bluetooth getBtDevice(){
+        return btDevice;
+    }
     @Override
     protected void onDestroy(){
         super.onDestroy();

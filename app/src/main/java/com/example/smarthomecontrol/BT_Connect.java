@@ -1,4 +1,4 @@
-/*
+
 package com.example.smarthomecontrol;
 
 import android.bluetooth.BluetoothAdapter;
@@ -19,37 +19,15 @@ public class BT_Connect implements Runnable{
 
 
     public void run(){
-        activity.runOnUiThread(new Runnable(){
 
-        })
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
-
-        for(BluetoothDevice b : btDevicesSet){
-            if(b.getAddress().equals("20:16:05:26:33:92")){
-                controller = b;
-            }
-        }
+        MainActivity main = new MainActivity();
+        Bluetooth btDevice = main.getBtDevice();
 
         try {
-            btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+            btDevice.getBtSocket().connect();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        try {
-            btSocket.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if(btSocket.isConnected()){
-            TextView btConnectedText = findViewById(R.id.bt_connected_text);
-            btConnectedText.setTextColor(Color.GREEN);
-            addTerminalText("Connected");
-        }else{
-            addTerminalText("Not connected, try again");
         }
     }
 }
-*/
+

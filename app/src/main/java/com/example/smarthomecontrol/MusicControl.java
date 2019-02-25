@@ -24,10 +24,11 @@ public class MusicControl extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.music_control);
 
-        //btDevice = new Bluetooth(this);
-        //powerSwitch = findViewById(R.id.power_switch);
+        MainActivity main = new MainActivity();
+        btDevice = main.getBtDevice();
+        powerSwitch = findViewById(R.id.power_switch);
 
-        /*findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
+        findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 if(btDevice.isConnected()){
@@ -87,7 +88,11 @@ public class MusicControl extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 addTerminalText("Connecting");
-                btDevice.connect();
+                if(btDevice.isBonded()){
+                    TextView btBondedText = findViewById(R.id.bt_bonded_text);
+                    btBondedText.setTextColor(Color.GREEN);
+                }
+                //btDevice.connect();
                 if(btDevice.isConnected()){
                     TextView btConnectedText = findViewById(R.id.bt_connected_text);
                     btConnectedText.setTextColor(Color.GREEN);
@@ -97,15 +102,6 @@ public class MusicControl extends AppCompatActivity {
                 }
             }
         });
-
-        findViewById(R.id.terminal_send_button).setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                EditText sendText = findViewById(R.id.terminal_send_text);
-                String input = sendText.getText().toString();
-                addTerminalText("Sending: " + input);
-            }
-        });*/
     }
 
     private void addTerminalText(String text){

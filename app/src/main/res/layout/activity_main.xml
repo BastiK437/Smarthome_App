@@ -1,59 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/black">
+    android:background="@color/grey">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SmartHome"
+            android:textColor="@color/white"
+            android:textSize="40dp"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/tv_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TV"/>
+
+            <Button
+                android:id="@+id/musik_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MUSIC"/>
+
+            <Button
+                android:id="@+id/relais_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RELAIS"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/terminal_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TERMINAL"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
 
     <TextView
+        android:id="@+id/bt_bonded_text_main_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SmartHome"
-        android:textColor="@color/white"
-        android:textSize="40dp"
-        android:layout_margin="10dp"
-        android:layout_gravity="center"/>
+        android:text="HC06 bonded"
+        android:textColor="@color/red"
+        android:layout_alignParentLeft="true"
+        android:layout_alignBottom="@id/connected_layout_main_menu"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="30dp"/>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/connected_layout_main_menu"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true">
 
-        <Button
-            android:id="@+id/tv_menu_button"
+        <TextView
+            android:id="@+id/bt_connected_text_main_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TV"/>
+            android:text="HC06 connected"
+            android:textColor="@color/red"
+            />
 
         <Button
-            android:id="@+id/musik_menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MUSIC"/>
-
-        <Button
-            android:id="@+id/relais_menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="RELAIS"/>
-
+            android:id="@+id/reload_main_menu_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/reload"
+            android:layout_alignRight="@id/bt_connected_text"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="15dp"
+            />
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/terminal_menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TERMINAL"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
 

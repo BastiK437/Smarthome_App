@@ -24,6 +24,7 @@ public class Bluetooth {
     private BluetoothSocket btSocket;
     private OutputStream btOutput;
     private Activity activity;
+    private boolean isBonded;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -41,6 +42,7 @@ public class Bluetooth {
 
     public Bluetooth(Activity activity){
         this.activity=activity;
+        isBonded = false;
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!btAdapter.isEnabled()) {
@@ -54,7 +56,9 @@ public class Bluetooth {
             if(b.getAddress().equals("20:16:05:26:33:92")){
                 //TextView bondedBT = findViewById(R.id.bt_bonded_text);
                 //bondedBT.setTextColor(Color.GREEN);
+                isBonded = true;
                 controller = b;
+                break;
             }
         }
 
@@ -69,7 +73,6 @@ public class Bluetooth {
     }
 
     public boolean connect(){
-
 
         return true;
     }
@@ -88,5 +91,13 @@ public class Bluetooth {
 
     public OutputStream getBtOutput(){
         return btOutput;
+    }
+
+    public boolean isBonded(){
+        return isBonded;
+    }
+
+    public BluetoothSocket getBtSocket(){
+        return btSocket;
     }
 }
