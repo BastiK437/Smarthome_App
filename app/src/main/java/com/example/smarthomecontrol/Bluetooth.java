@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -18,7 +20,7 @@ import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 
-public class Bluetooth implements Serializable {
+public class Bluetooth implements Parcelable {
     private final static int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter btAdapter;
     private BluetoothDevice controller;
@@ -63,7 +65,7 @@ public class Bluetooth implements Serializable {
             }
         }
 
-        activity.registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        //activity.registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
         try {
             btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
@@ -103,4 +105,49 @@ public class Bluetooth implements Serializable {
     public BluetoothSocket getBtSocket(){
         return btSocket;
     }
+
+    public void close(){
+        try {
+            btOutput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected Bluetooth(Parcel in) {
+        btAdapter = (BluetoothAdapter) in.readValue(BluetoothAdapter.class.getClassLoader());
+        controller = (BluetoothDevice) in.readValue(BluetoothDevice.class.getClassLoader());
+        btSocket = (BluetoothSocket) in.readValue(BluetoothSocket.class.getClassLoader());
+        btOutput = (OutputStream) in.readValue(OutputStream.class.getClassLoader());
+        activity = (Activity) in.readValue(Activity.class.getClassLoader());
+        isBonded = in.readByte() != 0x00;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(btAdapter);
+        dest.writeValue(controller);
+        dest.writeValue(btSocket);
+        dest.writeValue(btOutput);
+        dest.writeValue(activity);
+        dest.writeByte((byte) (isBonded ? 0x01 : 0x00));
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Bluetooth> CREATOR = new Parcelable.Creator<Bluetooth>() {
+        @Override
+        public Bluetooth createFromParcel(Parcel in) {
+            return new Bluetooth(in);
+        }
+
+        @Override
+        public Bluetooth[] newArray(int size) {
+            return new Bluetooth[size];
+        }
+    };
 }

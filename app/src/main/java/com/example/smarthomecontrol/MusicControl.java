@@ -1,6 +1,7 @@
 package com.example.smarthomecontrol;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +19,11 @@ import java.nio.channels.Pipe;
 public class MusicControl extends AppCompatActivity {
 
     private Switch powerSwitch;
-    private Pipe pipe;
+    private final Bluetooth btDevice;
+
+    public MusicControl() {
+        btDevice = getIntent().getParcelableExtra("btDevice");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -31,29 +36,27 @@ public class MusicControl extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 powerSwitch.setChecked(true);
-                MainActivity tmp = new MainActivity();
 
-                if(!tmp.write("aux")){
-                    addTerminalText("aux not send");
-                }else{
-                    addTerminalText("aux");
-                }
+                btDevice.write("aux");
             }
         });
 
-       /*
+
         findViewById(R.id.tape_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 if(btDevice.isConnected()){
                     powerSwitch.setChecked(true);
                     btDevice.write("tape");
+                    addTerminalText("send 'tape'");
+
                 }else{
                     addTerminalText("not connected");
                 }
             }
         });
 
+        /*
         findViewById(R.id.dvd_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
