@@ -13,33 +13,35 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.channels.Pipe;
 
 public class MusicControl extends AppCompatActivity {
 
-    private Bluetooth btDevice;
     private Switch powerSwitch;
+    private Pipe pipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.music_control);
 
-        MainActivity main = new MainActivity();
-        btDevice = main.getBtDevice();
         powerSwitch = findViewById(R.id.power_switch);
 
         findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(btDevice.isConnected()){
-                    powerSwitch.setChecked(true);
-                    btDevice.write("aux");
+                powerSwitch.setChecked(true);
+                MainActivity tmp = new MainActivity();
+
+                if(!tmp.write("aux")){
+                    addTerminalText("aux not send");
                 }else{
-                    addTerminalText("not connected");
+                    addTerminalText("aux");
                 }
             }
         });
 
+       /*
         findViewById(R.id.tape_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -101,7 +103,7 @@ public class MusicControl extends AppCompatActivity {
                     addTerminalText("Not connected, try again");
                 }
             }
-        });
+        });*/
     }
 
     private void addTerminalText(String text){

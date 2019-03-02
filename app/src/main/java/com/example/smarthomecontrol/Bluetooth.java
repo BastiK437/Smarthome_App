@@ -12,12 +12,13 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 
-public class Bluetooth {
+public class Bluetooth implements Serializable {
     private final static int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter btAdapter;
     private BluetoothDevice controller;
@@ -73,6 +74,8 @@ public class Bluetooth {
     }
 
     public boolean connect(){
+        BT_Connect connectThread = new BT_Connect(btSocket);
+        connectThread.start();
 
         return true;
     }

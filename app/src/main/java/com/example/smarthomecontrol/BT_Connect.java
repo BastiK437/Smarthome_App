@@ -11,20 +11,17 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
-public class BT_Connect implements Runnable{
+public class BT_Connect extends Thread{
 
     private BluetoothSocket btSocket;
-    private BluetoothAdapter btAdapter;
-    private BluetoothDevice controller;
 
+    public BT_Connect(BluetoothSocket socket){
+        btSocket = socket;
+    }
 
     public void run(){
-
-        MainActivity main = new MainActivity();
-        Bluetooth btDevice = main.getBtDevice();
-
         try {
-            btDevice.getBtSocket().connect();
+            btSocket.connect();
         } catch (IOException e) {
             e.printStackTrace();
         }
