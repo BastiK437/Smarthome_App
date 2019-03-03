@@ -1,5 +1,12 @@
 package com.example.smarthomecontrol;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Parcelable;
@@ -11,27 +18,60 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final Bluetooth btDevice = new Bluetooth(this);
+    private BluetoothAdapter btAdapter;
+    private BluetoothDevice controller;
+    private BluetoothSocket btSocket;
+    private OutputStream btOutput;
+    private boolean isBonded;
+    private BT_Connect connecting;
+
+
+    private final static int REQUEST_ENABLE_BT = 1;
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                if (btAdapter.getState() == BluetoothAdapter.STATE_OFF) {
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    return;
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        createMainMenu();
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!btAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
 
-        btDevice.connect();
+        createMainMenu();
+        createSocket();
+
+        connecting = new BT_Connect(btSocket);
+        connecting.start();
 
         findViewById(R.id.musik_menu_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Intent i = new Intent(MainActivity.this, MusicControl.class);
-                i.putExtra("btDevice", (Parcelable) btDevice);
                 startActivity(i);
             }
         });
@@ -39,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.reload_main_menu_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                btDevice.connect();
+                connecting.start();
             }
         });
 
@@ -95,12 +135,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    private void createSocket(){
+        Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
+        for(BluetoothDevice b : btDevicesSet){
+            if(b.getAddress().equals("20:16:05:26:33:92")){
+                isBonded = true;
+                controller = b;
+                break;
+            }
+        }
+        registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        try {
+            btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+            btOutput = btSocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        //btDevice.close();
+        try {
+            btOutput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

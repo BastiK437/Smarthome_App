@@ -1,7 +1,11 @@
 package com.example.smarthomecontrol;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,20 +19,23 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.Pipe;
+import java.util.Set;
+import java.util.UUID;
 
 public class MusicControl extends AppCompatActivity {
 
     private Switch powerSwitch;
-    private final Bluetooth btDevice;
-
-    public MusicControl() {
-        btDevice = getIntent().getParcelableExtra("btDevice");
-    }
+    private BluetoothAdapter btAdapter;
+    private BluetoothDevice controller;
+    private BluetoothSocket btSocket;
+    private OutputStream btOutput;
+    private boolean isBonded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.music_control);
+        createSocket();
 
         powerSwitch = findViewById(R.id.power_switch);
 
@@ -37,11 +44,15 @@ public class MusicControl extends AppCompatActivity {
             public void onClick(View view){
                 powerSwitch.setChecked(true);
 
-                btDevice.write("aux");
+                try {
+                    btOutput.write("aux".getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-
+/*
         findViewById(R.id.tape_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -56,7 +67,7 @@ public class MusicControl extends AppCompatActivity {
             }
         });
 
-        /*
+
         findViewById(R.id.dvd_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -125,5 +136,24 @@ public class MusicControl extends AppCompatActivity {
                 sv.fullScroll(ScrollView.FOCUS_DOWN);
             }
         });
+    }
+
+    private void createSocket(){
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
+
+        for(BluetoothDevice b : btDevicesSet){
+            if(b.getAddress().equals("20:16:05:26:33:92")){
+                isBonded = true;
+                controller = b;
+                break;
+            }
+        }
+        try {
+            btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+            btOutput = btSocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
