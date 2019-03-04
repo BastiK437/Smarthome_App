@@ -7,8 +7,10 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -25,9 +27,7 @@ import java.util.UUID;
 public class MusicControl extends AppCompatActivity {
 
     private Switch powerSwitch;
-    private BluetoothAdapter btAdapter;
-    private BluetoothDevice controller;
-    private BluetoothSocket btSocket;
+    static BluetoothSocket btSocket = null;
     private OutputStream btOutput;
     private boolean isBonded;
 
@@ -35,32 +35,54 @@ public class MusicControl extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.music_control);
-        createSocket();
+        setButtonEffect();
 
         powerSwitch = findViewById(R.id.power_switch);
+
+
+        if(btSocket==null){
+            Intent i = new Intent(MusicControl.this, MainActivity.class);
+            startActivity(i);
+        }else{
+            TextView bonded = findViewById(R.id.bt_bonded_text_music_control);
+            bonded.setTextColor(Color.GREEN);
+            try {
+                btOutput = btSocket.getOutputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if(btSocket.isConnected()){
+                TextView btConnectedText = findViewById(R.id.bt_connected_text_music_control);
+                btConnectedText.setTextColor(Color.GREEN);
+            }else{
+                BT_Connect connect = new BT_Connect(btSocket);
+                connect.start();
+            }
+        }
+
 
         findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                powerSwitch.setChecked(true);
-
-                try {
-                    btOutput.write("aux".getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(btSocket.isConnected()){
+                    powerSwitch.setChecked(true);
+                    send("aux");
+                    addTerminalText("send 'aux'");
+                }else{
+                    addTerminalText("not connected");
                 }
             }
         });
 
-/*
+
         findViewById(R.id.tape_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(btDevice.isConnected()){
+                if(btSocket.isConnected()){
                     powerSwitch.setChecked(true);
-                    btDevice.write("tape");
+                    send("tape");
                     addTerminalText("send 'tape'");
-
                 }else{
                     addTerminalText("not connected");
                 }
@@ -71,9 +93,10 @@ public class MusicControl extends AppCompatActivity {
         findViewById(R.id.dvd_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(btDevice.isConnected()){
+                if(btSocket.isConnected()){
                     powerSwitch.setChecked(true);
-                    btDevice.write("dvd");
+                    send("dvd");
+                    addTerminalText("send 'dvd'");
                 }else{
                     addTerminalText("not connected");
                 }
@@ -84,14 +107,15 @@ public class MusicControl extends AppCompatActivity {
         findViewById(R.id.power_switch).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(btDevice.isConnected()){
+                if(btSocket.isConnected()){
                     String buffer;
                     if(powerSwitch.isChecked()){
                         buffer = "anlage an";
                     }else{
                         buffer = "anlage aus";
                     }
-                    btDevice.write(buffer);
+                    send(buffer);
+                    addTerminalText("send '" + buffer + "'");
                 }else{
                     powerSwitch.setChecked(false);
                     addTerminalText("not connected");
@@ -103,21 +127,25 @@ public class MusicControl extends AppCompatActivity {
         findViewById(R.id.reload_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                addTerminalText("Connecting");
-                if(btDevice.isBonded()){
-                    TextView btBondedText = findViewById(R.id.bt_bonded_text);
-                    btBondedText.setTextColor(Color.GREEN);
-                }
-                //btDevice.connect();
-                if(btDevice.isConnected()){
-                    TextView btConnectedText = findViewById(R.id.bt_connected_text);
+                if(btSocket.isConnected()){
+                    TextView btConnectedText = findViewById(R.id.bt_connected_text_music_control);
                     btConnectedText.setTextColor(Color.GREEN);
                     addTerminalText("Connected");
                 }else{
-                    addTerminalText("Not connected, try again");
+                    addTerminalText("Connecting");
+                    BT_Connect connect = new BT_Connect(btSocket);
+                    connect.start();
                 }
             }
-        });*/
+        });
+    }
+
+    private void send(String command){
+        try {
+            btOutput.write(command.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addTerminalText(String text){
@@ -138,22 +166,31 @@ public class MusicControl extends AppCompatActivity {
         });
     }
 
-    private void createSocket(){
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-        Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
+    private void setButtonEffect(){
+        buttonEffect(findViewById(R.id.dvd_button));
+        buttonEffect(findViewById(R.id.aux_button));
+        buttonEffect(findViewById(R.id.tape_button));
+        buttonEffect(findViewById(R.id.reload_button));
+    }
 
-        for(BluetoothDevice b : btDevicesSet){
-            if(b.getAddress().equals("20:16:05:26:33:92")){
-                isBonded = true;
-                controller = b;
-                break;
+    public static void buttonEffect(View button){
+        button.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
             }
-        }
-        try {
-            btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-            btOutput = btSocket.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 }

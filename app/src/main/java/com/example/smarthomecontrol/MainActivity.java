@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -64,13 +66,21 @@ public class MainActivity extends AppCompatActivity {
 
         createMainMenu();
         createSocket();
+        setButtonEffect();
 
-        connecting = new BT_Connect(btSocket);
-        connecting.start();
+        if(btSocket.isConnected()){
+            TextView btConnectedText = findViewById(R.id.bt_connected_text_main_menu);
+            btConnectedText.setTextColor(Color.GREEN);
+        }else{
+            connecting = new BT_Connect(btSocket);
+            connecting.start();
+        }
 
         findViewById(R.id.musik_menu_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                MusicControl musicControl = new MusicControl();
+                musicControl.btSocket = btSocket;
                 Intent i = new Intent(MainActivity.this, MusicControl.class);
                 startActivity(i);
             }
@@ -79,10 +89,44 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.reload_main_menu_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                connecting.start();
+                if(btSocket.isConnected()){
+                    TextView btConnectedText = findViewById(R.id.bt_connected_text_main_menu);
+                    btConnectedText.setTextColor(Color.GREEN);
+                }else{
+                    connecting.start();
+                }
             }
         });
 
+    }
+
+    private void setButtonEffect(){
+        buttonEffect(findViewById(R.id.reload_main_menu_button));
+        buttonEffect(findViewById(R.id.musik_menu_button));
+        buttonEffect(findViewById(R.id.tv_menu_button));
+        buttonEffect(findViewById(R.id.relais_menu_button));
+        buttonEffect(findViewById(R.id.terminal_menu_button));
+    }
+
+    public static void buttonEffect(View button){
+        button.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     private void createMainMenu(){
@@ -139,7 +183,8 @@ public class MainActivity extends AppCompatActivity {
         Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
         for(BluetoothDevice b : btDevicesSet){
             if(b.getAddress().equals("20:16:05:26:33:92")){
-                isBonded = true;
+                TextView bonded = findViewById(R.id.bt_bonded_text_main_menu);
+                bonded.setTextColor(Color.GREEN);
                 controller = b;
                 break;
             }
