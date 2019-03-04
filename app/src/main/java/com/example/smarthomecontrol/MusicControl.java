@@ -169,7 +169,7 @@ public class MusicControl extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.volume_down_button).setOnClickListener(new View.OnClickListener(){
+        findViewById(R.id.volume_up_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 if(btSocket.isConnected()){
