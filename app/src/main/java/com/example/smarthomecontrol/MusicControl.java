@@ -12,9 +12,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -61,6 +63,12 @@ public class MusicControl extends AppCompatActivity {
             }
         }
 
+
+        final Spinner spinner = (Spinner) findViewById(R.id.volume_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.volume_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setBackgroundColor(Color.GRAY);
 
         findViewById(R.id.aux_button).setOnClickListener(new View.OnClickListener(){
             @Override
@@ -135,6 +143,50 @@ public class MusicControl extends AppCompatActivity {
                     addTerminalText("Connecting");
                     BT_Connect connect = new BT_Connect(btSocket);
                     connect.start();
+                }
+            }
+        });
+
+        findViewById(R.id.volume_down_button).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(btSocket.isConnected()){
+                    if(powerSwitch.isChecked()){
+                        String buffer;
+                        if(spinner.getSelectedItemPosition() == 0){
+                            buffer = "aleiser";
+                        }else{
+                            buffer = "am5";
+                        }
+                        addTerminalText("send '" + buffer + "'");
+                        send(buffer);
+                    }else{
+                        addTerminalText("turn it on first");
+                    }
+                }else{
+                    addTerminalText("not connected");
+                }
+            }
+        });
+
+        findViewById(R.id.volume_down_button).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(btSocket.isConnected()){
+                    if(powerSwitch.isChecked()){
+                        String buffer;
+                        if(spinner.getSelectedItemPosition() == 0){
+                            buffer = "alauter";
+                        }else{
+                            buffer = "ap5";
+                        }
+                        addTerminalText("send '" + buffer + "'");
+                        send(buffer);
+                    }else{
+                        addTerminalText("turn it on first");
+                    }
+                }else{
+                    addTerminalText("not connected");
                 }
             }
         });

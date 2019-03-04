@@ -210,11 +210,3 @@ public class MainActivity extends AppCompatActivity {
 
 }
 
-/*
-        Spinner spinner = (Spinner) findViewById(R.id.volume_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.volume_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        */
-//spinner.setSelection(0);
-//spinner.getSelectedItemPosition();
