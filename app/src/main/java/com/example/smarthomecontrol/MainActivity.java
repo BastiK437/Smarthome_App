@@ -189,12 +189,14 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-        registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        try {
-            btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-            btOutput = btSocket.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(controller != null) {
+            try {
+                registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+                btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                btOutput = btSocket.getOutputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
