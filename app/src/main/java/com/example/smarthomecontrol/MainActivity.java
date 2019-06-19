@@ -64,8 +64,11 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
+        // create the buttons for the main menu
         createMainMenu();
+        // looking for bonded devices
         createSocket();
+        // well..
         setButtonEffect();
 
         if(btSocket.isConnected()){
@@ -179,8 +182,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void createSocket(){
+    private boolean createSocket(){
+        boolean result;
         Set<BluetoothDevice> btDevicesSet =  btAdapter.getBondedDevices();
+
         for(BluetoothDevice b : btDevicesSet){
             if(b.getAddress().equals("20:16:05:26:33:92")){
                 TextView bonded = findViewById(R.id.bt_bonded_text_main_menu);
@@ -189,7 +194,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-        if(controller != null) {
+
+        if(controller == null) {
+            result = false;
+        }else {
+            result = true;
             try {
                 registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
                 btSocket = controller.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
@@ -198,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        return result;
     }
 
     @Override
